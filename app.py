@@ -28,7 +28,14 @@ class_labels = [
     'drilling', 'engine_idling', 'gun_shot', 'jackhammer',
     'siren', 'street_music'
 ]
-
+# Pre-warm librosa/numba at startup to avoid timeout on first request
+import warnings
+warnings.filterwarnings("ignore")
+print("⏳ Pre-warming librosa...")
+_dummy = np.zeros(SAMPLE_RATE * DURATION, dtype=np.float32)
+_ = librosa.feature.melspectrogram(y=_dummy, sr=SAMPLE_RATE, n_fft=2048, hop_length=512, n_mels=N_MELS)
+_ = librosa.feature.mfcc(y=_dummy, sr=SAMPLE_RATE, n_mfcc=13)
+print("✅ Librosa pre-warmed!")
 # ----------------------------
 # Folder setup
 # ----------------------------
